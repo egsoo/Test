@@ -1,23 +1,21 @@
 FROM python:3.11-slim
 
-# Install system dependencies including ffmpeg
+# ffmpeg = media processing, aria2 = fast external downloader for yt-dlp
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    ca-certificates \
-    curl \
+    ffmpeg aria2 ca-certificates curl \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install Python packages
 COPY requirements.txt .
+# Build-time install of yt-dlp picks the LATEST version at every deploy/rebuild
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project code
-COPY . .
+COPY worker.py .
 
-# Directory for temporary video operations
-RUN mkdir -p /tmp/media
+# Job workspace - mount a Render Disk here so folders survive restarts
+RUN mkdir -p /data
+ENV DATA_DIR=/data
 
-# Render supplies the $PORT environment variable automatically
-CMD sh -c "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"
+EXPOSE 8000
+CMD ["uvicorn", "worker:app", "--host", "0.0.0.0", "--port", "8000"]
