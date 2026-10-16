@@ -1,5 +1,9 @@
-fastapi>=0.110.0
-uvicorn[standard]>=0.28.0
-yt-dlp>=2024.3.10
-pydantic>=2.6.0
-python-multipart>=0.0.9
+telethon>=1.36
+cryptg>=0.4
+yt-dlp
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.7
+aiohttp>=3.9
+pypdf>=4.2
+PyMuPDF>=1.24
